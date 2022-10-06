@@ -26,7 +26,7 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public List<Cliente> find(Cliente filtro){
+    public List<Produto> find(Produto filtro){
         ExampleMatcher matcher = ExampleMatcher
                                 .matching()
                                 .withIgnoreCase()
@@ -45,15 +45,14 @@ public class ProdutoController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@PathVariable Integer id,
-                        @RequestBody Produto produto){
+    public void update(@PathVariable Integer id, @RequestBody Produto produto){
 
         produtoRepository.findById(id).map(produtoExistente -> {
             produto.setId(produtoExistente.getId());
             produtoRepository.save(produto);
             return produtoExistente;
-        }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                "Produto não encontrado"));
+        }).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 
     @DeleteMapping("/{id}")
@@ -62,7 +61,7 @@ public class ProdutoController {
         produtoRepository.findById(id)
                 .map(produto -> {
                     produtoRepository.delete(produto);
-                    return produto;
+                    return Void.TYPE;
                 })
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
