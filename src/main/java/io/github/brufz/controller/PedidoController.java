@@ -3,7 +3,6 @@ package io.github.brufz.controller;
 import io.github.brufz.model.Pedido;
 import io.github.brufz.rest.dto.PedidoDto;
 import io.github.brufz.service.PedidoService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
