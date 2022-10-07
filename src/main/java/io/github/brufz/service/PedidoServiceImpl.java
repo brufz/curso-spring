@@ -9,6 +9,8 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import io.github.brufz.enuns.StatusPedido;
+import io.github.brufz.exception.PedidoNaoEncontradoException;
 import io.github.brufz.exception.RegraNegocioException;
 import io.github.brufz.model.Cliente;
 import io.github.brufz.model.ItemPedido;
@@ -56,6 +58,7 @@ public class PedidoServiceImpl implements PedidoService{
         pedido.setTotal(dto.getTotal());
         pedido.setDataPedido(LocalDate.now()); //gera data de agora
         pedido.setCliente(cliente);
+        pedido.setStatus(StatusPedido.REALIZADO);
 
         List<ItemPedido> itensPedidos = converterItens(pedido, dto.getItens());
         repository.save(pedido); //a partir desse momento a entidade pedido esta salva no banco e obtem o id
@@ -89,5 +92,15 @@ public class PedidoServiceImpl implements PedidoService{
 	@Override
 	public Optional<Pedido> obterPedidoCompleto(Integer id) {
 		return repository.findByIdFetchItens(id);
+	}
+
+	@Override
+	@Transactional
+	public void atualizaStatus(Integer id, StatusPedido statusPedido) {
+		repository.findById(id).map(pedido -> {
+			pedido.setStatus(statusPedido);
+			return repository.save(pedido);
+		}).orElseThrow(() -> new PedidoNaoEncontradoException());
+		
 	}
 }

@@ -1,13 +1,14 @@
 package io.github.brufz.controller;
 
+
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,8 +17,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import io.github.brufz.enuns.StatusPedido;
 import io.github.brufz.model.ItemPedido;
 import io.github.brufz.model.Pedido;
+import io.github.brufz.rest.dto.AtualizacaoStatusPedidoDto;
 import io.github.brufz.rest.dto.InformacaoItemPedidoDto;
 import io.github.brufz.rest.dto.InformacoesPedidoDto;
 import io.github.brufz.rest.dto.PedidoDto;
@@ -53,6 +56,7 @@ public class PedidoController {
     			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
     }
     
+    //converte o pedido em informações do pedido
     private InformacoesPedidoDto converter(Pedido pedido) {
     	return InformacoesPedidoDto
     			.builder()
@@ -61,6 +65,7 @@ public class PedidoController {
     			.cpf(pedido.getCliente().getCpf())
     			.nomeCliente(pedido.getCliente().getNome())
     			.total(pedido.getTotal())
+    			.status(pedido.getStatus().name())
     			.itens(converter(pedido.getItens()))
     			.build();
     }
@@ -77,5 +82,13 @@ public class PedidoController {
     					.quantidade(item.getQuantidade())
     					.build()
     			).collect(Collectors.toList());
+    }
+    
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    private void updateStatus(@RequestBody AtualizacaoStatusPedidoDto dto,
+    						@PathVariable Integer id) {
+    	String novoStatus = dto.getNovoStatus();
+    	service.atualizaStatus(id, StatusPedido.valueOf(novoStatus));
     }
 }

@@ -2,6 +2,7 @@ package io.github.brufz.service;
 
 import java.util.Optional;
 
+import io.github.brufz.enuns.StatusPedido;
 import io.github.brufz.model.Pedido;
 import io.github.brufz.rest.dto.PedidoDto;
 
@@ -10,4 +11,6 @@ public interface PedidoService {
     Pedido salvar(PedidoDto dto);
     
     Optional<Pedido> obterPedidoCompleto(Integer id);
+    
+    void atualizaStatus(Integer id, StatusPedido statusPedido);
 }

@@ -1,6 +1,7 @@
 package io.github.brufz.controller;
 
 import io.github.brufz.APIErrors;
+import io.github.brufz.exception.PedidoNaoEncontradoException;
 import io.github.brufz.exception.RegraNegocioException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,5 +19,11 @@ public class ApplicationControllerAdvice {
     public APIErrors handleRegraNegocioException(RegraNegocioException ex){
         String mensagemErro = ex.getMessage();
         return new APIErrors(mensagemErro);
+    }
+    
+    @ExceptionHandler(PedidoNaoEncontradoException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public APIErrors handlePedidoNotFoundException(PedidoNaoEncontradoException ex) {
+    	return new APIErrors(ex.getMessage());
     }
 }
