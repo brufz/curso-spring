@@ -1,7 +1,5 @@
 package io.github.brufz.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,6 +26,8 @@ public class Pedido {
 
     @OneToMany(mappedBy = "pedido")
     private List<ItemPedido> itens;
+    
+    
 
     public List<ItemPedido> getItens() {
         return itens;

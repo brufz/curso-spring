@@ -1,5 +1,14 @@
 package io.github.brufz.service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.transaction.Transactional;
+
+import org.springframework.stereotype.Service;
+
 import io.github.brufz.exception.RegraNegocioException;
 import io.github.brufz.model.Cliente;
 import io.github.brufz.model.ItemPedido;
@@ -11,12 +20,6 @@ import io.github.brufz.repository.PedidoRepository;
 import io.github.brufz.repository.ProdutoRepository;
 import io.github.brufz.rest.dto.ItemPedidoDto;
 import io.github.brufz.rest.dto.PedidoDto;
-import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
 
 //regras de negócio sao implementadas na camada de serviço
 @Service
@@ -82,4 +85,9 @@ public class PedidoServiceImpl implements PedidoService{
                 }).collect(Collectors.toList()); //converte o itempedido em uma lista (tem que usar por causa do .stream .map)
 
     }
+
+	@Override
+	public Optional<Pedido> obterPedidoCompleto(Integer id) {
+		return repository.findByIdFetchItens(id);
+	}
 }

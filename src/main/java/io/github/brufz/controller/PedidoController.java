@@ -1,10 +1,27 @@
 package io.github.brufz.controller;
 
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import io.github.brufz.model.ItemPedido;
 import io.github.brufz.model.Pedido;
+import io.github.brufz.rest.dto.InformacaoItemPedidoDto;
+import io.github.brufz.rest.dto.InformacoesPedidoDto;
 import io.github.brufz.rest.dto.PedidoDto;
 import io.github.brufz.service.PedidoService;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/pedidos")
@@ -16,6 +33,9 @@ public class PedidoController {
     public PedidoController(PedidoService service){
         this.service = service;
     }
+    
+    //@Autowired
+    //private PedidoService service;
 
     //vai retornar o id do pedido gerado
     @PostMapping
@@ -24,6 +44,38 @@ public class PedidoController {
         Pedido pedido = service.salvar(dto);
         return pedido.getId();
     }
-
-
+    
+    @GetMapping("/{id}")
+    public InformacoesPedidoDto getById(@PathVariable Integer id) {
+    	return service
+    			.obterPedidoCompleto(id)
+    			.map(p -> converter(p))
+    			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
+    }
+    
+    private InformacoesPedidoDto converter(Pedido pedido) {
+    	return InformacoesPedidoDto
+    			.builder()
+    			.codigo(pedido.getId())
+    			.dataPedido(pedido.getDataPedido().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+    			.cpf(pedido.getCliente().getCpf())
+    			.nomeCliente(pedido.getCliente().getNome())
+    			.total(pedido.getTotal())
+    			.itens(converter(pedido.getItens()))
+    			.build();
+    }
+    
+    private List<InformacaoItemPedidoDto> converter(List<ItemPedido> itens){
+    	if(org.springframework.util.CollectionUtils.isEmpty(itens)) {
+    		return Collections.emptyList();
+    	}
+    	return itens.stream()
+    			.map( item -> InformacaoItemPedidoDto
+    					.builder()
+    					.descricaoProduto(item.getProduto().getDescricao())
+    					.precoUnitario(item.getProduto().getPreco())
+    					.quantidade(item.getQuantidade())
+    					.build()
+    			).collect(Collectors.toList());
+    }
 }

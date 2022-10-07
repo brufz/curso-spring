@@ -1,8 +1,6 @@
 package io.github.brufz.model;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "item_pedido")
