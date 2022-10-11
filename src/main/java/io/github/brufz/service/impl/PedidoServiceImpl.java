@@ -1,4 +1,4 @@
-package io.github.brufz.service;
+package io.github.brufz.service.impl;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,6 +22,7 @@ import io.github.brufz.repository.PedidoRepository;
 import io.github.brufz.repository.ProdutoRepository;
 import io.github.brufz.rest.dto.ItemPedidoDto;
 import io.github.brufz.rest.dto.PedidoDto;
+import io.github.brufz.service.PedidoService;
 
 //regras de negócio sao implementadas na camada de serviço
 @Service

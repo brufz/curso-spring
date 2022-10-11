@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -43,7 +45,7 @@ public class PedidoController {
     //vai retornar o id do pedido gerado
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Integer save(@RequestBody PedidoDto dto){
+    public Integer save(@RequestBody @Valid PedidoDto dto){
         Pedido pedido = service.salvar(dto);
         return pedido.getId();
     }
@@ -84,6 +86,7 @@ public class PedidoController {
     			).collect(Collectors.toList());
     }
     
+    //cancelar o pedido significa alterar só uma parte dele que é o STATUS, portanto se usa o Patch
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     private void updateStatus(@RequestBody AtualizacaoStatusPedidoDto dto,
