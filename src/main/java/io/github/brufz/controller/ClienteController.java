@@ -21,15 +21,25 @@ import org.springframework.web.server.ResponseStatusException;
 
 import io.github.brufz.model.Cliente;
 import io.github.brufz.repository.ClienteRepository;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping("/api/clientes")
+@Api("Api Clientes")
 public class ClienteController {
 
     @Autowired
     private ClienteRepository clienteRepository;
 
     @GetMapping("/{id}") //se eu usar um nome diferente do parametro tenhoque usar @Param
+    @ApiOperation("Obter detalhes de um cliente")
+    @ApiResponses({
+    	@ApiResponse(code = 200, message = "Cliente encontrado"),
+    	@ApiResponse(code = 404, message = "Cliente não encontrado para o id informado")
+    })
     public Cliente getClienteById(@PathVariable Integer id) throws ResponseStatusException {
         return clienteRepository
                 .findById(id) //sucesso
@@ -38,6 +48,8 @@ public class ClienteController {
     }
 
     @GetMapping
+    @ApiOperation("Obter lista de clientes")
+    @ApiResponse(code = 200, message = "Cliente encontrado")
     public List<Cliente> find (Cliente filtro){
         ExampleMatcher matcher = ExampleMatcher
                                 .matching()
@@ -53,6 +65,11 @@ public class ClienteController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation("Atualizar um  cliente")
+    @ApiResponses({
+    	@ApiResponse(code = 204, message = "Cliente atualizado com sucesso"),
+    	@ApiResponse(code = 404, message = "Cliente não encontrado para o id informado")
+    })
     public void update (@PathVariable Integer id ,
                        @Valid @RequestBody Cliente cliente) throws ResponseStatusException{
         clienteRepository.findById(id)
@@ -64,8 +81,14 @@ public class ClienteController {
                                                                             "Cliente não encontrado"));
     }
 
+    
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED) //define o código de status que retorna quando não é 200 - OK
+    @ApiOperation("Salvar um novo cliente")
+    @ApiResponses({
+    	@ApiResponse(code = 201, message = "Cliente cadastrado com sucesso"),
+    	@ApiResponse(code = 400, message = "Erro de validação")
+    })
     public Cliente save(@RequestBody @Valid Cliente cliente){
         return clienteRepository.save(cliente);
 
@@ -73,6 +96,11 @@ public class ClienteController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation("Deletar um  cliente")
+    @ApiResponses({
+    	@ApiResponse(code = 204, message = "Cliente deletado com sucesso"),
+    	@ApiResponse(code = 404, message = "Cliente não encontrado para o id informado")
+    })
     public void delete(@PathVariable Integer id) throws ResponseStatusException {
         clienteRepository.findById(id)
                 .map(cliente -> { //método map tem que ter um return

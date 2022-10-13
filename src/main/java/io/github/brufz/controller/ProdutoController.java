@@ -21,6 +21,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import io.github.brufz.model.Produto;
 import io.github.brufz.repository.ProdutoRepository;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping("/api/produtos")
@@ -30,12 +33,19 @@ public class ProdutoController {
     private ProdutoRepository produtoRepository;
 
     @GetMapping("/{id}")
+    @ApiOperation("Obter detalhes de um produto")
+    @ApiResponses({
+    	@ApiResponse(code = 200, message = "Produto encontrado"),
+    	@ApiResponse(code = 404, message = "Produto não encontrado para o id informado")
+    })
     public Produto getProdutoById(@PathVariable Integer id) throws ResponseStatusException {
         return produtoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 
     @GetMapping
+    @ApiOperation("Obter lista de produtos")
+    @ApiResponse(code = 200, message = "Lista de produtos encontrada")
     public List<Produto> find(Produto filtro){
         ExampleMatcher matcher = ExampleMatcher
                                 .matching()
@@ -49,12 +59,22 @@ public class ProdutoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Salvar um novo produto")
+    @ApiResponses({
+    	@ApiResponse(code = 201, message = "Produto cadastrado com sucesso"),
+    	@ApiResponse(code = 400, message = "Erro de validação")
+    })
     public Produto save(@RequestBody @Valid Produto produto){
         return produtoRepository.save(produto);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation("Atualizar um  produto")
+    @ApiResponses({
+    	@ApiResponse(code = 204, message = "Produto atualizado com sucesso"),
+    	@ApiResponse(code = 404, message = "Produto não encontrado para o id informado")
+    })
     public void update(@PathVariable Integer id,
     					@Valid @RequestBody Produto produto){
 
@@ -68,6 +88,11 @@ public class ProdutoController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation("Deletar um  produto")
+    @ApiResponses({
+    	@ApiResponse(code = 204, message = "Produto deletado com sucesso"),
+    	@ApiResponse(code = 404, message = "Produto não encontrado para o id informado")
+    })
     public void deleteById(@PathVariable Integer id){
         produtoRepository.findById(id)
                 .map(produto -> {

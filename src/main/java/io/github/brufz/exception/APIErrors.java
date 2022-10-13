@@ -1,4 +1,4 @@
-package io.github.brufz;
+package io.github.brufz.exception;
 
 import java.util.Arrays;
 import java.util.List;

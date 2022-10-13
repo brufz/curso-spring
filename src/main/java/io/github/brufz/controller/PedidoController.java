@@ -27,6 +27,9 @@ import io.github.brufz.rest.dto.InformacaoItemPedidoDto;
 import io.github.brufz.rest.dto.InformacoesPedidoDto;
 import io.github.brufz.rest.dto.PedidoDto;
 import io.github.brufz.service.PedidoService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping("/api/pedidos")
@@ -39,18 +42,26 @@ public class PedidoController {
         this.service = service;
     }
     
-    //@Autowired
-    //private PedidoService service;
 
     //vai retornar o id do pedido gerado
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Salvar um novo pedido")
+    @ApiResponses({
+    	@ApiResponse(code = 201, message = "Pedido cadastrado com sucesso"),
+    	@ApiResponse(code = 400, message = "Erro de validação")
+    })
     public Integer save(@RequestBody @Valid PedidoDto dto){
         Pedido pedido = service.salvar(dto);
         return pedido.getId();
     }
     
     @GetMapping("/{id}")
+    @ApiOperation("Obter detalhes de um pedido")
+    @ApiResponses({
+    	@ApiResponse(code = 200, message = "Pedido encontrado"),
+    	@ApiResponse(code = 404, message = "Pedido não encontrado para o id informado")
+    })
     public InformacoesPedidoDto getById(@PathVariable Integer id) {
     	return service
     			.obterPedidoCompleto(id)
@@ -89,6 +100,8 @@ public class PedidoController {
     //cancelar o pedido significa alterar só uma parte dele que é o STATUS, portanto se usa o Patch
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation("Atualizar o status do pedido")
+    @ApiResponse(code = 204, message = "Status atualizado com sucesso")
     private void updateStatus(@RequestBody AtualizacaoStatusPedidoDto dto,
     						@PathVariable Integer id) {
     	String novoStatus = dto.getNovoStatus();
